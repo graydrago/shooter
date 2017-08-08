@@ -8,7 +8,7 @@ module.exports = [
     context: __dirname,
     entry: "./src/core.ts",
     output: {
-      path: __dirname + "/build/public/",
+      path: __dirname + "/build/",
       filename: "js/script.js",
     },
     module: {
@@ -20,7 +20,8 @@ module.exports = [
     plugins: [
       new CopyWebpackPlugin([
         { from: 'src/index.html', to: 'index.html' },
-        { from: 'src/vendor/three.min.js', to: 'src/vendor/three.min.js' },
+        { from: 'src/vendor/three.min.js', to: 'vendor/three.min.js' },
+        { from: 'src/css', to: 'css' },
       ]),
     ],
     devtool: "source-map"
