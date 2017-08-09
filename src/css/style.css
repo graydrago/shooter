@@ -11,6 +11,10 @@ body, html {
   padding: 0;
 }
 
+canvas {
+  cursor: none;
+}
+
 @media (max-width: 800px) {
   body {
     overflow-x: scroll;
