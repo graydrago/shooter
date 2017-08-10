@@ -6,6 +6,7 @@ window.onload = () => {
   let material : THREE.Material;
   let mesh : THREE.Mesh;
   let sphere: THREE.Mesh;
+  let enemy: THREE.Mesh;
   let light: THREE.Light;
   let raycaster = new THREE.Raycaster();
   let plane = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0);
@@ -47,18 +48,27 @@ window.onload = () => {
       camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 2000);
       camera.position.z = 1000;
    
-      geometry = new THREE.BoxGeometry( 100, 50, 20);
-      //material = new THREE.MeshBasicMaterial( { color: 0xff0000, wireframe: false } );
-      material = new THREE.MeshPhongMaterial( { color: 0xff0000 } );
-
-      sphere = new THREE.Mesh(new THREE.SphereGeometry(25, 32, 32),
-                              new THREE.MeshPhongMaterial( { color: 0x0000ff } ));
-      sphere.position.x = 3;
-
-      mesh = new THREE.Mesh( geometry, material );
+      mesh = new THREE.Mesh(
+        new THREE.BoxGeometry( 100, 50, 20),
+        new THREE.MeshPhongMaterial( { color: 0x00ff00 } )
+      );
       mesh.position.set(0, 0, 0);
       scene.add( mesh );
+
+      sphere = new THREE.Mesh(
+        new THREE.SphereGeometry(25, 32, 32),
+        new THREE.MeshPhongMaterial( { color: 0x0000ff } )
+      );
+      sphere.position.x = 3;
       scene.add( sphere);
+
+      enemy = new THREE.Mesh(
+        new THREE.BoxGeometry( 100, 100, 100),
+        new THREE.MeshPhongMaterial( { color: 0xff0000 } )
+      );
+      enemy.position.set(400, 0, 0);
+      scene.add( enemy );
+
 
       light = new THREE.DirectionalLight();
       light.position.x = camera.position.x;
@@ -164,7 +174,6 @@ window.onload = () => {
         bullets.directions[found_bullet_id] = direction_vector;
       } else {
         bullet_mesh = new THREE.Mesh(
-          //new THREE.CubeGeometry(40, 10, 10),
           new THREE.SphereGeometry(10, 10, 10),
           new THREE.MeshBasicMaterial({color: 0xcccccc})
         );
@@ -180,10 +189,18 @@ window.onload = () => {
     }
 
     let l = bullets.collection.length;
+    let bullet_collider = new THREE.Sphere(new THREE.Vector3(0, 0, 0), 10);
+    let enemy_collider = new THREE.Box3().setFromObject(enemy);
     for (let i = 0; i < l; ++i) {
       if (bullets.timers[i] >= 0) {
         bullets.collection[i].position.add(bullets.directions[i]);
         bullets.timers[i] -= elapsed_seconds;
+        bullet_collider.center.copy(bullets.collection[i].position);
+        if (bullet_collider.intersectsBox(enemy_collider)) {
+          bullets.timers[i] = -1;
+          bullets.collection[i].position.x = 10000;
+          enemy.position.add(bullets.directions[i]);
+        }
       }
     }
 
