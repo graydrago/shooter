@@ -10,6 +10,7 @@ window.onload = () => {
   let light: THREE.Light;
   let raycaster = new THREE.Raycaster();
   let plane = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0);
+  let composer : THREE.EffectComposer;
   let last_frame_time = null;
   let is_fullscreen_enabled = false;
   let bullets = {
@@ -75,9 +76,17 @@ window.onload = () => {
       light.position.y = camera.position.y;
       light.position.z = camera.position.z;
       scene.add(light);
-   
+      
       renderer = new THREE.WebGLRenderer();
       renderer.setSize( window.innerWidth, window.innerHeight );
+
+      composer = new THREE.EffectComposer(renderer);
+
+      let render_pass = new THREE.RenderPass(scene, camera);
+      let sepia_pass = new THREE.ShaderPass(THREE.SepiaShader);
+      sepia_pass.renderToScreen = true;
+      composer.addPass(render_pass);
+      composer.addPass(sepia_pass);
    
       document.body.appendChild( renderer.domElement );
       window.addEventListener("mousemove", (e) => {
@@ -152,7 +161,6 @@ window.onload = () => {
     let subs = (new THREE.Vector3()).subVectors(sphere.position, mesh.position);
     let angle = Math.atan2(subs.y, subs.x);
     mesh.setRotationFromAxisAngle(new THREE.Vector3(0, 0, 1), angle);
-    renderer.render( scene, camera );
 
     bullets.elapsed_time += elapsed_seconds;
     if (control.fire && bullets.elapsed_time > bullets.expected_time) {
@@ -204,6 +212,8 @@ window.onload = () => {
       }
     }
 
+    //renderer.render( scene, camera );
+    composer.render();
     requestAnimationFrame( animate );
   }
 

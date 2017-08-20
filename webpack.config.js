@@ -20,8 +20,9 @@ module.exports = [
     plugins: [
       new CopyWebpackPlugin([
         { from: 'src/index.html', to: 'index.html' },
-        { from: 'src/vendor/three.min.js', to: 'vendor/three.min.js' },
+        { from: 'src/vendor', to: 'vendor' },
         { from: 'src/css', to: 'css' },
+        { from: 'src/img', to: 'img' }
       ]),
     ],
     devtool: "source-map"
